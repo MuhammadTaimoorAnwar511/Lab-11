@@ -1,60 +1,40 @@
 pipeline {
-    agent any
-    
-    environment {
-        DOCKER_IMAGE = 'myapp:latest'
-        DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
-        DOCKER_REGISTRY = 'https://index.docker.io/v1/'
-    }
 
+    agent any
+
+    tools {nodejs "nodejs_jenkins"} 
+    
     stages {
+        
         stage('Checkout') {
             steps {
-                git 'https://github.com/MuhammadTaimoorAnwar511/Lab-11.git'
+                git 'https://github.com/huzi0906/jenkins-practice.git'
             }
         }
 
-        stage('Install Dependencies') {
+        stage('Dependency Installation') {
             steps {
-                // Adjust this step according to your project's dependency manager
-                // For example, if it's a Node.js project, you might use `npm install`
-                // If it's a Python project, you might use `pip install -r requirements.txt`
-                echo 'Assuming Node.js setup: Running npm install'
                 sh 'npm install'
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build') {
             steps {
-                sh "docker build -t ${DOCKER_IMAGE} ."
+                sh 'npm run build'
             }
         }
 
         stage('Run Docker Image') {
             steps {
-                // Adjust port mappings based on your application's needs
-                echo 'Running Docker container on port 80'
-                sh "docker run -d -p 80:80 ${DOCKER_IMAGE}"
+                sh 'docker build -t jenkins-practice .'
+                sh "docker run -d -p 3000:3000 jenkins-practice"
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    docker.withRegistry(DOCKER_REGISTRY, DOCKER_CREDENTIALS_ID) {
-                        docker.image(DOCKER_IMAGE).push()
-                    }
-                }
+                sh "docker push jenkins-practice"
             }
-        }
-    }
-
-    post {
-        success {
-            echo 'Pipeline completed successfully.'
-        }
-        failure {
-            echo 'Pipeline failed.'
         }
     }
 }

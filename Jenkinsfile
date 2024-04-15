@@ -2,38 +2,33 @@ pipeline {
 
     agent any
 
-    tools {nodejs "nodejs_jenkins"} 
-    
+   
     stages {
-        
-        stage('Checkout') {
-            steps {
-                git 'https://github.com/MuhammadTaimoorAnwar511/Lab-11.git'
+         stage('dependencies') {
+          steps {
+              sh 'npm install'
             }
-        }
+          }
 
-        stage('Dependency Installation') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Build') {
+        stage('build') {
             steps {
                 sh 'npm run build'
             }
         }
-
-        stage('Run Docker Image') {
+       
+        stage('Docker Image') {
             steps {
-                sh 'docker build -t jenkins-practice .'
-                sh "docker run -d -p 3000:3000 jenkins-practice"
+               
+                    sh "echo docker_build_-t_SCD-Lab11"
+               
             }
         }
-
-        stage('Push Docker Image') {
+       
+        stage('Docker Comopse Up') {
             steps {
-                sh "docker push jenkins-practice"
+               
+                    sh "echo sudo-docker-compose-up"
+               
             }
         }
     }
